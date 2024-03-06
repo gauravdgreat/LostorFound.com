@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost and Found</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #0f0;
+        }
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: rgb(255, 136, 0); /* Neon saffron */
+            margin: 0;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: calc(100vh - 100px); /* Full height minus header height */
+            margin-top: 20px;
+        }
+        .section {
+            width: 50%;
+            text-align: center;
+        }
+        .lost-section {
+            border-right: 1px solid #0f0; /* Neon green */
+        }
+        .found-section {
+            border-left: 1px solid #f00; /* Neon red */
+        }
+        footer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #00f; /* Neon blue */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 40%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000; /* Ensure the form appears above other elements */
+        }
+        form.show {
+            display: block;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #0f0; /* Neon green */
+        }
+        input[type="text"], input[type="tel"], input[type="search"] {
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        button.cancel {
+            background-color: #f00; /* Neon red */
+            margin-left: 10px;
+        }
+        .lost-section h2 {
+            color: #f00; /* Neon red */
+        }
+        .item {
+            margin-bottom: 10px;
+            color: #fff; /* White text */
+            white-space: nowrap; /* Prevent line breaks */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+            padding: 5px; /* Add padding for better readability */
+            border: 1px solid #0f0; /* Neon green border */
+            border-radius: 5px; /* Rounded corners */
+            margin-right: 10px; /* Add space between items */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>LOSTORFOUND.COM</h1>
+    </header>
+
+    <main>
+        <section class="section lost-section">
+            <h2>Lost Items</h2>
+            <input type="search" id="lost-search" placeholder="Search lost items...">
+            <div class="lost-items"></div>
+        </section>
+        <section class="section found-section">
+            <h2>Found Items</h2>
+            <input type="search" id="found-search" placeholder="Search found items...">
+            <div class="found-items"></div>
+        </section>
+    </main>
+
+    <footer>
+        <button id="report-btn" onclick="toggleForm()">Report</button>
+    </footer>
+
+    <form id="report-form" class="form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required>
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label>Lost or Found:</label>
+        <input type="radio" id="lost" name="type" value="lost" required>
+        <label for="lost">Lost</label>
+        <input type="radio" id="found" name="type" value="found" required>
+        <label for="found">Found</label>
+
+        <label for="item-name">Name of Item:</label>
+        <input type="text" id="item-name" name="item-name" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+
+        <button type="submit">Submit</button>
+        <button type="button" class="cancel" onclick="toggleForm()">Cancel</button>
+    </form>
+
+    <script>
+        document.querySelectorAll(".item").forEach(function(item) {
+    item.addEventListener("click", function() {
+        // Show full details when clicked
+        alert(item.getAttribute("data-details"));
+    });
+});
+        document.getElementById("report-form").addEventListener("submit", function(event) {
+            // Prevent default form submission behavior
+            event.preventDefault();
+
+            // Get form values
+            var name = document.getElementById("name").value;
+            var address = document.getElementById("address").value;
+            var phone = document.getElementById("phone").value;
+            var type = document.querySelector('input[name="type"]:checked').value;
+            var itemName = document.getElementById("item-name").value;
+            var location = document.getElementById("location").value;
+
+            // Create new item element
+            var newItem = document.createElement("div");
+            newItem.classList.add("item");
+            newItem.innerText = `${type.toUpperCase()} - Name: ${name}, Address: ${address}, Phone: ${phone}, Item: ${itemName}, Location: ${location}`;
+
+            // Determine the section to append the new item to
+            var section;
+            if (type === "lost") {
+                section = document.querySelector(".lost-items");
+            } else {
+                section = document.querySelector(".found-items");
+            }
+
+            // Append the new item to the section
+            section.appendChild(newItem);
+
+            // Clear form inputs
+            document.getElementById("report-form").reset();
+
+            // Close the form
+            toggleForm();
+            newItem.addEventListener("click", function() {
+        alert(newItem.getAttribute("data-details"));
+    });
+        });
+
+        function toggleForm() {
+            var form = document.getElementById("report-form");
+            form.classList.toggle("show");
+
+            var main = document.querySelector("main");
+            main.classList.toggle("blur");
+        }
+
+        document.getElementById("lost-search").addEventListener("input", function() {
+            searchItems("lost");
+        });
+
+        document.getElementById("found-search").addEventListener("input", function() {
+            searchItems("found");
+        });
+
+        function searchItems(type) {
+            var searchInput = type === "lost" ? document.getElementById("lost-search") : document.getElementById("found-search");
+            var items = type === "lost" ? document.querySelectorAll(".lost-items .item") : document.querySelectorAll(".found-items .item");
+            var searchText = searchInput.value.toLowerCase();
+
+            items.forEach(function(item) {
+                var itemName = item.innerText.toLowerCase();
+                if (itemName.includes(searchText)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
